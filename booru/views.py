@@ -139,7 +139,7 @@ def post_list_detail(request, page_number = 1):
     page = p.page(page_number)
     post_list = page.object_list
 
-    tags_list = Post.tags.most_common().filter(post__id__in=post_list)[:25]
+    tags_list = Post.tags.most_common().filter(id__in=post_list)[:25]
     
     return render(request, 'booru/posts.html', {"posts": post_list, "page": page, "tags_list": tags_list,
                                                 "SHOW_ADS": True, "is_safe_only": is_safe_only})
@@ -568,6 +568,7 @@ class SiteConfigurationView(FormView):
         initial = super().get_initial()
 
         initial['site_title'] = Configuration.objects.get(code_name='site_title').value
+        initial['site_description'] = Configuration.objects.get(code_name='site_description').value
         initial['terms_of_service'] = Configuration.objects.get(code_name='terms_of_service').value
         initial['privacy_policy'] = Configuration.objects.get(code_name='privacy_policy').value
         initial['announcement'] = Configuration.objects.get(code_name='announcement').value
@@ -578,6 +579,10 @@ class SiteConfigurationView(FormView):
         site_title = Configuration.objects.get(code_name='site_title')
         site_title.value = form.cleaned_data.get('site_title')
         site_title.save()
+
+        site_description = Configuration.objects.get(code_name='site_description')
+        site_description.value = form.cleaned_data.get('site_description')
+        site_description.save()
 
         terms_of_service = Configuration.objects.get(code_name='terms_of_service')
         terms_of_service.value = form.cleaned_data.get('terms_of_service')

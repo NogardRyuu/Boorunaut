@@ -29,13 +29,6 @@ def validate_sources(source):
     sources = "\n".join(sources)
     return sources
 
-class TaggitAdminTextareaWidget(AdminTextareaWidget):
-    # taken from taggit.forms.TagWidget
-    def render(self, name, value, attrs=None, renderer=None):
-        if value is not None and not isinstance(value, six.string_types):
-            value = edit_string_for_tags([o.tag for o in value.select_related("tag")])
-        return super(TaggitAdminTextareaWidget, self).render(name, value, attrs, renderer)
-
 class CreatePostForm(forms.ModelForm):
     '''Form for creating an post.'''
 
@@ -126,7 +119,6 @@ class EditPostForm(forms.ModelForm):
         self.fields['parent'].widget = forms.NumberInput(attrs={'class': 'form-control'})
         self.fields['source'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control', 'rows':4, 'cols':15})
-        self.fields['tags'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control'})
 
 class TagListSearchForm(forms.Form):
     '''Form for creating an post.'''
@@ -157,8 +149,6 @@ class TagEditForm(forms.ModelForm):
         self.fields['description'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_link'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['associated_user_name'].widget = forms.Textarea(attrs={'class': 'form-control'})
-        self.fields['aliases'].widget = TaggitAdminTextareaWidget(attrs={'class': 'form-control',
-                                                                        'data-role': 'tagsinput', 'rows':1})
 
     class Meta:
         model = PostTag
@@ -275,6 +265,7 @@ class GalleryListSearchForm(forms.Form):
 
 class SiteConfigurationForm(forms.Form):
     site_title = forms.CharField(required=True, help_text="The name of the website to be shown.")
+    site_description = forms.CharField(required=False, help_text="The description of the website for search engines.")
     welcome_page = forms.BooleanField(required=False)
     terms_of_service = forms.CharField(required=False)
     privacy_policy = forms.CharField(required=False)
@@ -286,6 +277,7 @@ class SiteConfigurationForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(SiteConfigurationForm, self).__init__(*args, **kwargs)
         self.fields['site_title'].widget = forms.TextInput(attrs={'class': 'form-control'})
+        self.fields['site_description'].widget = forms.TextInput(attrs={'class': 'form-control'})
         self.fields['welcome_page'].widget = forms.CheckboxInput(attrs={'class': 'form-control', 'data-toggle': 'toggle'})
         self.fields['terms_of_service'].widget = forms.Textarea(attrs={'class': 'form-control'})
         self.fields['privacy_policy'].widget = forms.Textarea(attrs={'class': 'form-control'})
